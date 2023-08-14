@@ -1,0 +1,25 @@
+{
+  "name": "node-proxy",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "http-proxy-middleware": "^2.0.6",
+    "morgan": "^1.10.0"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "build": "spack && npm run static && npm run prerender",
+    "static": "cp static/* dist",
+    "prerender": "ts-node tools/prerender.ts"
+  },
+  "directories": {
+    "serve": "dist"
+  },
+  "files": [
+    "dist",
+    "index.js"
+  ]
+}
