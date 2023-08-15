@@ -9,10 +9,11 @@ const app = express();
 // Configuration
 const PORT = 3000;
 const HOST = "localhost";
-const API_SERVICE_URL = "https://jsonplaceholder.typicode.com";
+const target_URL = "https://google.com";
 
 // Logging
 app.use(morgan('dev'));
+
 // Cors
 app.use(cors());
 
@@ -22,20 +23,20 @@ app.get('/info', (req, res, next) => {
 });
 
 // Authorization
-app.use('', (req, res, next) => {
+/*app.use('', (req, res, next) => {
     if (req.headers.authorization) {
         next();
     } else {
         res.sendStatus(403);
     }
-});
+});*/
 
 // Proxy endpoints
-app.use('/json_placeholder', createProxyMiddleware({
-    target: API_SERVICE_URL,
+app.use('/proxy', createProxyMiddleware({
+    target: target_URL,
     changeOrigin: true,
     pathRewrite: {
-        [`^/json_placeholder`]: '',
+        [`^/proxy`]: '',
     },
 }));
 
