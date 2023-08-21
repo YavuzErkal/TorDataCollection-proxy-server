@@ -82,7 +82,7 @@ const outputFile = '/Users/yavuzerkal/Desktop/node-express.txt';
 const tcpdumpStart = `sudo tcpdump -i ${networkInterface} -w ${outputFile}`;
 const tcpdumpStop = 'pkill tcpdump && kill tcpdump'
 
-exec(tcpdumpStart, (error, stdout, stderr) => {
+/*exec(tcpdumpStart, (error, stdout, stderr) => {
     if (error) {
         console.error(`Error: ${error.message}`);
         return;
@@ -92,7 +92,7 @@ exec(tcpdumpStart, (error, stdout, stderr) => {
         return;
     }
     console.log(`stdout: ${stdout}`);
-});
+});*/
 
 // Start the Proxy
 app.listen(PORT, HOST, () => {
