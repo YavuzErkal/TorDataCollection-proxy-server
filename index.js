@@ -16,13 +16,8 @@ const HOST = "localhost";
 const target_URL = "https://google.com";
 
 app.use(morgan('dev')); // Logging
-//app.use(cors()); // Cors
+app.use(cors()); // Cors
 app.use(express.static('public')); // serve files in the public directory
-app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "http://localhost:3000"); // update to match the domain you will make the request from
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next()
-})
 
 // Info GET endpoint
 app.get('/info', (req, res, next) => {
@@ -61,25 +56,11 @@ app.get('/tor-test', (req, res, next) => {
     res.sendStatus(200)
 });
 
-
-app.use('/proxy-test',
-    createProxyMiddleware({
-        target: 'https://facebook.com',
-        changeOrigin: true,
-    })
-);
-
-app.get("/proxy/:url", (req, res) => {
-    const url = req.params.url;
-    console.log(req.params)
-
-    let origin = req.get('origin');
-    console.log('origin')
-    console.log(origin)
-
-    //1request(url).pipe(res);
-    //fetch(url).then(r => console.log(r))
+app.get('/aaa', function(req,res) {
+    let newurl = 'http://facebook.com/';
+    request(newurl).pipe(res);
 });
+
 
 const networkInterface = 'en0';
 const outputFile = '/Users/yavuzerkal/Desktop/node-express.txt';

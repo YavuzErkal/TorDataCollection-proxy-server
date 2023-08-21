@@ -30,7 +30,6 @@ $(document).ready(function() {
     submitButton3.click(function() {
         // Get the entered URL from the input field
         const enteredUrl = urlInput.val();
-        //const encodedUrl = + encodeURIComponent(enteredUrl)
 
         $.get('/proxy/' + enteredUrl, function(data) {
             console.log('Response from ' + enteredUrl + ':', data);
