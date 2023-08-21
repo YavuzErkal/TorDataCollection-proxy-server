@@ -5,6 +5,7 @@ $(document).ready(function() {
     const urlInput = $('#urlInput');
     const submitButton = $('#submitButton');
     const submitButton2 = $('#submitButton2');
+    const submitButton3 = $('#submitButton3');
 
     // Attach a click event handler to the button
     submitButton.click(function() {
@@ -23,6 +24,15 @@ $(document).ready(function() {
 
     submitButton2.click(function() {
         $.get('/ip-without-tor', function(data) {
+            console.log('Response from ' + enteredUrl + ':', data);
+        })
+            .fail(function() {
+                console.log('Failed to fetch data from ' + enteredUrl);
+            });
+    });
+
+    submitButton3.click(function() {
+        $.get('/tor-test', function(data) {
             console.log('Response from ' + enteredUrl + ':', data);
         })
             .fail(function() {

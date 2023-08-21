@@ -47,17 +47,23 @@ app.get('/ip-with-tor', (req, res, next) => {
     }, res => {
         res.pipe(process.stdout);
     })
-    res.send('your TOR - IP is: ' + req.ip)
 });
-
 
 app.get('/ip-without-tor', (req, res, next) => {
     https.get('https://ifconfig.me', {}, res => {
         res.pipe(process.stdout);
     })
-    res.send('your normal IP is: ' + req.ip)
 });
 
+app.get('/tor-test', (req, res, next) => {
+    https.get('https://youtube.com', {
+        agent
+    }, res => {
+        res.pipe(process.stdout);
+        console.log(res)
+    })
+    res.sendStatus(200)
+});
 
 
 
