@@ -18,6 +18,11 @@ const target_URL = "https://google.com";
 app.use(morgan('dev')); // Logging
 //app.use(cors()); // Cors
 app.use(express.static('public')); // serve files in the public directory
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "http://localhost:3000"); // update to match the domain you will make the request from
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next()
+})
 
 // Info GET endpoint
 app.get('/info', (req, res, next) => {
@@ -27,15 +32,6 @@ app.get('/info', (req, res, next) => {
 app.get('/', (req, res, next) => {
     res.sendFile('public/index.html', {root: __dirname});
 });
-
-/*app.get('/proxy-client', (req, res, next) => {
-    res.send(request("http://info.cern.ch/", null, function(error, response, body) {
-        if (!error && response.statusCode == 200) {
-            // writing the response to a file named data.html
-            fs.writeFileSync("data.html", body);
-        }
-    }));
-});*/
 
 /*const agent = new SocksProxyAgent('socks5h://127.0.0.1:9050');*/
 const agent = new SocksProxyAgent('socks5://127.0.0.1:9050');
@@ -72,6 +68,18 @@ app.use('/proxy-test',
         changeOrigin: true,
     })
 );
+
+app.get("/proxy/:url", (req, res) => {
+    const url = req.params.url;
+    console.log(req.params)
+
+    let origin = req.get('origin');
+    console.log('origin')
+    console.log(origin)
+
+    //1request(url).pipe(res);
+    //fetch(url).then(r => console.log(r))
+});
 
 const networkInterface = 'en0';
 const outputFile = '/Users/yavuzerkal/Desktop/node-express.txt';

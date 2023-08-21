@@ -31,9 +31,8 @@ $(document).ready(function() {
         // Get the entered URL from the input field
         const enteredUrl = urlInput.val();
         //const encodedUrl = + encodeURIComponent(enteredUrl)
-        console.log(enteredUrl)
 
-        $.get('/proxy-test', function(data) {
+        $.get('/proxy/' + enteredUrl, function(data) {
             console.log('Response from ' + enteredUrl + ':', data);
         })
             .fail(function() {
