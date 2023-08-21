@@ -66,22 +66,12 @@ app.get('/tor-test', (req, res, next) => {
 });
 
 
-
-
-/*
-app.use('/proxy/', createProxyMiddleware({
-    target: function (req, res) {
-        // Get the URL parameter from the query string
-        const targetUrl = req.query.url;
-
-        // Return the target URL as the proxy target
-        return targetUrl;
-    },
-    changeOrigin: true,
-    pathRewrite: {
-        '^/proxy/': ''
-    }
-}));*/
+app.use('/proxy-test',
+    createProxyMiddleware({
+        target: 'https://facebook.com',
+        changeOrigin: true,
+    })
+);
 
 const networkInterface = 'en0';
 const outputFile = '/Users/yavuzerkal/Desktop/node-express.txt';

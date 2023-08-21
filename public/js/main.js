@@ -9,10 +9,6 @@ $(document).ready(function() {
 
     // Attach a click event handler to the button
     submitButton.click(function() {
-        // Get the entered URL from the input field
-        const enteredUrl = urlInput.val();
-        const encodedUrl = + encodeURIComponent(enteredUrl)
-
         // Send a GET request to Express proxy server
         $.get('/ip-with-tor', function(data) {
             console.log('Response from ' + enteredUrl + ':', data);
@@ -32,7 +28,12 @@ $(document).ready(function() {
     });
 
     submitButton3.click(function() {
-        $.get('/tor-test', function(data) {
+        // Get the entered URL from the input field
+        const enteredUrl = urlInput.val();
+        //const encodedUrl = + encodeURIComponent(enteredUrl)
+        console.log(enteredUrl)
+
+        $.get('/proxy-test', function(data) {
             console.log('Response from ' + enteredUrl + ':', data);
         })
             .fail(function() {
