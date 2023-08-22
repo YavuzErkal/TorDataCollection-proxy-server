@@ -61,6 +61,19 @@ app.get('/aaa', function(req,res) {
     request(newurl).pipe(res);
 });
 
+app.get('/proxy', function(req,res) {
+    const requestedUrl = req.query.url;
+    console.log("Received URL:", requestedUrl);
+
+    https.get('https://youtube.com',  res => {
+        res.pipe(process.stdout);
+        console.log(res)
+    })
+
+
+    res.sendStatus(200)
+});
+
 
 const networkInterface = 'en0';
 const outputFile = '/Users/yavuzerkal/Desktop/node-express.txt';
