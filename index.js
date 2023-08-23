@@ -19,55 +19,24 @@ app.use(morgan('dev')); // Logging
 app.use(cors()); // Cors
 app.use(express.static('public')); // serve files in the public directory
 
-// Info GET endpoint
-app.get('/info', (req, res, next) => {
-    res.send('This is a proxy service which proxies to Billing and Account APIs.');
-});
-
 app.get('/', (req, res, next) => {
     res.sendFile('public/index.html', {root: __dirname});
 });
 
-/*const agent = new SocksProxyAgent('socks5h://127.0.0.1:9050');*/
-const agent = new SocksProxyAgent('socks5://127.0.0.1:9050');
-let ip_tor, ip_not_tor;
-
-app.get('/ip-with-tor', (req, res, next) => {
-    https.get('https://ifconfig.me', {
-        agent
-    }, res => {
-        res.pipe(process.stdout);
-    })
-});
-
-app.get('/ip-without-tor', (req, res, next) => {
-    https.get('https://ifconfig.me', {}, res => {
-        res.pipe(process.stdout);
-    })
-});
-
-app.get('/tor-test', (req, res, next) => {
-    https.get('https://youtube.com', {
-        agent
-    }, res => {
-        res.pipe(process.stdout);
-        console.log(res)
-    })
-    res.sendStatus(200)
-});
-
-app.get('/aaa', function(req,res) {
-    let newurl = 'http://facebook.com/';
-    request(newurl).pipe(res);
+app.get('/info', (req, res, next) => {
+    res.send('This is a proxy service for Tor connections');
 });
 
 app.get('/proxy', function(req,res) {
     const requestedUrl = req.query.url;
     console.log("Received URL:", requestedUrl);
 
-    https.get('https://youtube.com',  res => {
+    https.get('https://' + requestedUrl,  res => {
         res.pipe(process.stdout);
         console.log(res)
+    }).on("error", err => {
+        console.error('Error: ', err.message)
+        // TODO signal to the client that the URL was invalid
     })
 
 
