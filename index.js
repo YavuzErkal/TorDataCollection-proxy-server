@@ -2,9 +2,6 @@ const express = require('express');
 const morgan = require("morgan");
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const cors = require("cors")
-const { exec } = require("child_process");
-const request = require("request");
-const fs = require("fs");
 const https = require('https');
 const { SocksProxyAgent } = require('socks-proxy-agent');
 
