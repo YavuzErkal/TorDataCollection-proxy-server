@@ -4,6 +4,7 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 const cors = require("cors")
 const https = require('https');
 const { SocksProxyAgent } = require('socks-proxy-agent');
+const {spawn, exec} = require("node:child_process");
 
 const app = express(); // Create Express Server
 
@@ -20,7 +21,7 @@ app.get('/', (req, res, next) => {
     res.sendFile('public/index.html', {root: __dirname});
 });
 
-app.get('/info', (req, res, next) => {
+app.get('/check-server', (req, res, next) => {
     res.send('This is a proxy service for Tor connections');
 });
 
@@ -40,25 +41,46 @@ app.get('/proxy', function(req,res) {
     res.sendStatus(200)
 });
 
-
 const networkInterface = 'en0';
-const outputFile = '/Users/yavuzerkal/Desktop/node-express.txt';
-const tcpdumpStart = `sudo tcpdump -i ${networkInterface} -w ${outputFile}`;
-const tcpdumpStop = 'pkill tcpdump && kill tcpdump'
+const outputFile = '/Users/yavuzerkal/Desktop/server-tcpdump.txt';
 
-/*exec(tcpdumpStart, (error, stdout, stderr) => {
-    if (error) {
-        console.error(`Error: ${error.message}`);
-        return;
-    }
-    if (stderr) {
-        console.error(`stderr: ${stderr}`);
-        return;
-    }
-    console.log(`stdout: ${stdout}`);
-});*/
+let currentTcpdumpPID = 0;
 
-// Start the Proxy
+app.get('/tcpdump-start', (req, res) => {
+    console.log("Starting tcpdump at server side")
+    spawn('tcpdump', ["-i", networkInterface, "-w", outputFile])
+
+    const getTcpdumpPID =  `ps -A | grep tcpdump | grep -v grep | awk '{print $1}'`
+    const getTcpdumpInfo =  `ps -A | grep tcpdump | grep -v grep`
+
+    exec(getTcpdumpInfo, (error, stdout) => {
+        if (error) {console.error(`Error: ${error.message}`);return;}
+        console.log(`currentTcpdumpPID: ${stdout}`);
+    });
+
+
+    exec(getTcpdumpPID, (error, stdout) => {
+        if (error) {console.error(`Error: ${error.message}`);return;}
+
+        currentTcpdumpPID = stdout.replace(/\r?\n$/, '') // remove carriage return at the end of line
+        console.log(`currentTcpdumpPID: ${currentTcpdumpPID}`);
+    });
+})
+
+app.get('/tcpdump-stop', (req, res) => {
+    console.log("Stopping tcpdump")
+
+    const tcpdumpStop = 'kill ' + currentTcpdumpPID
+
+    exec(tcpdumpStop, (error, stdout, stderr) => {
+        if (error) {console.error(`Error: ${error.message}`);return;}
+        if (stderr) {console.error(`stderr: ${stderr}`);return;}
+
+        console.log('tcpdump with PID ' + currentTcpdumpPID + ' is stopped.')
+    });
+})
+
+// Start the server
 app.listen(PORT, HOST, () => {
     console.log(`Starting Proxy at ${HOST}:${PORT}`);
 });
