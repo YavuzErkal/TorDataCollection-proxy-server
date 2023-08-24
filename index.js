@@ -41,6 +41,10 @@ app.get('/proxy', function(req,res) {
     res.sendStatus(200)
 });
 
+app.get('/proxy-request', function(req,res) {
+    res.send("Yürü beeee")
+});
+
 const networkInterface = 'en0';
 const outputFile = '/Users/yavuzerkal/Desktop/server-tcpdump.txt';
 
