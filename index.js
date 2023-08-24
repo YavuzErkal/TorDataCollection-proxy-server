@@ -25,11 +25,11 @@ app.get('/check-server', (req, res, next) => {
     res.send('This is a proxy service for Tor connections');
 });
 
-app.get('/proxy', function(req,res) {
-    const requestedUrl = req.query.url;
-    console.log("Received URL:", requestedUrl);
+app.get('/proxy-request', function(req,res) {
+    const requestUrl = req.query.url;
+    console.log(`Received request for ${requestUrl} over the Tor circuit. Proxying it to the final destination...`);
 
-    https.get('https://' + requestedUrl,  res => {
+    https.get('https://' + requestUrl,  res => {
         res.pipe(process.stdout);
         console.log(res)
     }).on("error", err => {
@@ -37,12 +37,7 @@ app.get('/proxy', function(req,res) {
         // TODO signal to the client that the URL was invalid
     })
 
-
     res.sendStatus(200)
-});
-
-app.get('/proxy-request', function(req,res) {
-    res.send("Yürü beeee")
 });
 
 const networkInterface = 'en0';
