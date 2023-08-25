@@ -18,7 +18,8 @@ app.get('/', (req, res, next) => {
 });
 
 app.get('/check-server', (req, res, next) => {
-    res.send('This is a proxy service for Tor connections');
+    console.log('check-server request received from the client')
+    res.send('Proxy server is running');
 });
 
 app.get('/proxy-request', function(req,res) {
