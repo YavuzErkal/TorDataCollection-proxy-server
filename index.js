@@ -1,9 +1,7 @@
 const express = require('express');
 const morgan = require("morgan");
-const { createProxyMiddleware } = require('http-proxy-middleware');
 const cors = require("cors")
 const https = require('https');
-const { SocksProxyAgent } = require('socks-proxy-agent');
 const {spawn, exec} = require("node:child_process");
 
 const app = express(); // Create Express Server
@@ -11,9 +9,7 @@ const app = express(); // Create Express Server
 // Configuration
 const PORT = 3000;
 const HOST = "localhost";
-const target_URL = "https://google.com";
 
-app.use(morgan('dev')); // Logging
 app.use(cors()); // Cors
 app.use(express.static('public')); // serve files in the public directory
 
@@ -34,14 +30,15 @@ app.get('/proxy-request', function(req,res) {
         console.log(res)
     }).on("error", err => {
         console.error('Error: ', err.message)
-        // TODO signal to the client that the URL was invalid
+        res.send(err.message)
+        return;
     })
 
     res.sendStatus(200)
 });
 
-const networkInterface = 'en0';
-const outputFile = '/Users/yavuzerkal/Desktop/server-tcpdump.txt';
+const networkInterface = 'eth0';
+const outputFile = '/root/server-tcpdump.txt';
 
 let currentTcpdumpPID = 0;
 
@@ -54,15 +51,14 @@ app.get('/tcpdump-start', (req, res) => {
 
     exec(getTcpdumpInfo, (error, stdout) => {
         if (error) {console.error(`Error: ${error.message}`);return;}
-        console.log(`currentTcpdumpPID: ${stdout}`);
+        console.log(`current tcpdump process: ${stdout}`);
     });
-
 
     exec(getTcpdumpPID, (error, stdout) => {
         if (error) {console.error(`Error: ${error.message}`);return;}
 
         currentTcpdumpPID = stdout.replace(/\r?\n$/, '') // remove carriage return at the end of line
-        console.log(`currentTcpdumpPID: ${currentTcpdumpPID}`);
+        console.log(`current tcpdump PID: ${currentTcpdumpPID}`);
     });
 })
 
