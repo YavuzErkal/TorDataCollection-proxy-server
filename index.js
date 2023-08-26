@@ -49,7 +49,7 @@ app.get('/tcpdump-start', (req, res) => {
                                             echo "Creating new log file ${outputFile}";
                                             rm /root/server-tcpdump.txt;
                                      else
-                                         echo "Creating new log file ${outputFile} to save tcpdump values"; fi`;
+                                         echo -n "Creating new log file ${outputFile} to save tcpdump values"; fi`;
     exec(deleteLogFileIfExisting, (error, stdout) => {
         if (error) {console.error(`Error: ${error.message}`); res.send(error.message); return;}
         console.log(stdout);
@@ -63,14 +63,14 @@ app.get('/tcpdump-start', (req, res) => {
 
     exec(getTcpdumpInfo, (error, stdout) => {
         if (error) {console.error(`Error: ${error.message}`); res.send(error.message); return;}
-        console.log(`current tcpdump process: ${stdout}`);
+        const currentTcpdumpProcessInfo = stdout.replace(/\r?\n$/, '') // remove carriage return at the end of line
+        console.log(`current tcpdump process: ${currentTcpdumpProcessInfo}`);
     });
 
     exec(getTcpdumpPID, (error, stdout) => {
         if (error) {console.error(`Error: ${error.message}`); res.send(error.message);return;}
 
         currentTcpdumpPID = stdout.replace(/\r?\n$/, '') // remove carriage return at the end of line
-        console.log(`current tcpdump PID: ${currentTcpdumpPID}`);
     });
 
     res.sendStatus(200);
