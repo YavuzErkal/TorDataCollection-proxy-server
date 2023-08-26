@@ -53,9 +53,9 @@ app.get('/tcpdump-start', (req, res) => {
     exec(deleteLogFileIfExisting, (error, stdout) => {
         if (error) {console.error(`Error: ${error.message}`); res.send(error.message); return;}
         console.log(stdout);
+        console.log("Starting tcpdump at server side")
     })
 
-    console.log("Starting tcpdump at server side")
     spawn('tcpdump', ["-i", networkInterface, "-w", outputFile])
 
     const getTcpdumpPID =  `ps -A | grep tcpdump | grep -v grep | awk '{print $1}'`
