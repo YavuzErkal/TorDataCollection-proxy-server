@@ -50,7 +50,10 @@ app.get('/tcpdump-start', (req, res) => {
                                             rm /root/server-tcpdump.txt;
                                      else
                                          echo "Creating new log file ${outputFile} to save tcpdump values"; fi`;
-    exec(deleteLogFileIfExisting)
+    exec(deleteLogFileIfExisting, (error, stdout) => {
+        if (error) {console.error(`Error: ${error.message}`); res.send(error.message); return;}
+        console.log(stdout);
+    })
 
     console.log("Starting tcpdump at server side")
     spawn('tcpdump', ["-i", networkInterface, "-w", outputFile])
@@ -59,16 +62,18 @@ app.get('/tcpdump-start', (req, res) => {
     const getTcpdumpInfo =  `ps -A | grep tcpdump | grep -v grep`
 
     exec(getTcpdumpInfo, (error, stdout) => {
-        if (error) {console.error(`Error: ${error.message}`);return;}
+        if (error) {console.error(`Error: ${error.message}`); res.send(error.message); return;}
         console.log(`current tcpdump process: ${stdout}`);
     });
 
     exec(getTcpdumpPID, (error, stdout) => {
-        if (error) {console.error(`Error: ${error.message}`);return;}
+        if (error) {console.error(`Error: ${error.message}`); res.send(error.message);return;}
 
         currentTcpdumpPID = stdout.replace(/\r?\n$/, '') // remove carriage return at the end of line
         console.log(`current tcpdump PID: ${currentTcpdumpPID}`);
     });
+
+    res.sendStatus(200);
 })
 
 app.get('/tcpdump-stop', (req, res) => {
@@ -77,11 +82,13 @@ app.get('/tcpdump-stop', (req, res) => {
     const tcpdumpStop = 'kill ' + currentTcpdumpPID
 
     exec(tcpdumpStop, (error, stdout, stderr) => {
-        if (error) {console.error(`Error: ${error.message}`);return;}
-        if (stderr) {console.error(`stderr: ${stderr}`);return;}
+        if (error) {console.error(`Error: ${error.message}`); res.send(error.message); return;}
+        if (stderr) {console.error(`stderr: ${stderr}`); res.send(error.message); return;}
 
         console.log('tcpdump with PID ' + currentTcpdumpPID + ' is stopped.')
     });
+
+    res.sendStatus(200);
 })
 
 // Start the server
