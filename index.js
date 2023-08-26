@@ -18,7 +18,7 @@ app.get('/', (req, res, next) => {
 });
 
 app.get('/check-server', (req, res, next) => {
-    console.log('check-server request received from the client')
+    console.log('Check-server request received from the client')
     res.send('Proxy server is running');
 });
 
@@ -64,7 +64,7 @@ app.get('/tcpdump-start', (req, res) => {
     exec(getTcpdumpInfo, (error, stdout) => {
         if (error) {console.error(`Error: ${error.message}`); res.send(error.message); return;}
         const currentTcpdumpProcessInfo = stdout.replace(/\r?\n$/, '') // remove carriage return at the end of line
-        console.log(`current tcpdump process: ${currentTcpdumpProcessInfo}`);
+        console.log(`Current tcpdump process: ${currentTcpdumpProcessInfo}`);
     });
 
     exec(getTcpdumpPID, (error, stdout) => {
