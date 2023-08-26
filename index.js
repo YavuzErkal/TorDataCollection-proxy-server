@@ -46,7 +46,7 @@ let currentTcpdumpPID = 0;
 app.get('/tcpdump-start', (req, res) => {
     const deleteLogFileIfExisting = `if [ -f /root/server-tcpdump.txt ]; then
                                             echo "Deleting previous log file ${outputFile}";
-                                            echo "Creating new log file ${outputFile}";
+                                            echo -n "Creating new log file ${outputFile}";
                                             rm /root/server-tcpdump.txt;
                                      else
                                          echo -n "Creating new log file ${outputFile} to save tcpdump values"; fi`;
