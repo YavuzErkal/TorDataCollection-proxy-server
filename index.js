@@ -44,6 +44,14 @@ const outputFile = '/root/server-tcpdump.txt';
 let currentTcpdumpPID = 0;
 
 app.get('/tcpdump-start', (req, res) => {
+    const deleteLogFileIfExisting = `if [ -f /root/server-tcpdump.txt ]; then
+                                            echo "Deleting previous log file ${outputFile}";
+                                            echo "Creating new log file ${outputFile}";
+                                            rm /root/server-tcpdump.txt;
+                                     else
+                                         echo "Creating new log file ${outputFile} to save tcpdump values"; fi`;
+    exec(deleteLogFileIfExisting)
+
     console.log("Starting tcpdump at server side")
     spawn('tcpdump', ["-i", networkInterface, "-w", outputFile])
 
