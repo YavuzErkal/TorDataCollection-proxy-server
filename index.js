@@ -16,7 +16,7 @@ app.get('/', (req, res, next) => {
     res.sendFile('public/index.html', {root: __dirname});
 });
 
-app.get('/check-server', (req, res, next) => {
+app.get('/check-proxy-server', (req, res, next) => {
     console.log('Check-server request received from the client')
     res.send('Proxy server is running');
 });
@@ -26,7 +26,7 @@ const outputFile = '/root/server-tcpdump.txt';
 
 let currentTcpdumpPID = 0;
 
-app.get('/tcpdump-start', (req, res) => {
+app.get('/tcpdump-server-start', (req, res) => {
     const deleteLogFileIfExisting = `if [ -f /root/server-tcpdump.txt ]; then
                                             echo "Deleting previous log file ${outputFile}";
                                             echo -n "Creating new log file ${outputFile}";
@@ -59,7 +59,7 @@ app.get('/tcpdump-start', (req, res) => {
     res.sendStatus(200);
 })
 
-app.get('/tcpdump-stop', (req, res) => {
+app.get('/tcpdump-server-stop', (req, res) => {
     console.log("Stopping tcpdump")
 
     const tcpdumpStop = 'kill ' + currentTcpdumpPID
