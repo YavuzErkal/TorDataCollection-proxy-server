@@ -1,5 +1,4 @@
 const express = require('express');
-const morgan = require("morgan");
 const cors = require("cors")
 const https = require('https');
 const {spawn, exec} = require("node:child_process");
@@ -26,16 +25,15 @@ app.get('/proxy-request', function(req,res) {
     const requestUrl = req.query.url;
     console.log(`Received request for ${requestUrl} over the Tor circuit. Proxying it to the final destination...`);
 
-    https.get('https://' + requestUrl,  res => {
-        res.pipe(process.stdout);
-        console.log(res)
+    https.get('https://' + requestUrl,  externalRequest => {
+        externalRequest.pipe(process.stdout);
+        console.log(externalRequest)
+        res.sendStatus(200)
     }).on("error", err => {
         console.error('Error: ', err.message)
         res.send(err.message)
         return;
     })
-
-    res.sendStatus(200)
 });
 
 const networkInterface = 'eth0';
