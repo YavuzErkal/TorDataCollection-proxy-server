@@ -21,21 +21,6 @@ app.get('/check-server', (req, res, next) => {
     res.send('Proxy server is running');
 });
 
-app.get('/proxy-request', function(req,res) {
-    const requestUrl = req.query.url;
-    console.log(`Received request for ${requestUrl} over the Tor circuit. Proxying it to the final destination...`);
-
-    https.get('https://' + requestUrl,  externalRequest => {
-        externalRequest.pipe(process.stdout);
-        console.log(externalRequest)
-        res.sendStatus(200)
-    }).on("error", err => {
-        console.error('Error: ', err.message)
-        res.send(err.message)
-        return;
-    })
-});
-
 const networkInterface = 'eth0';
 const outputFile = '/root/server-tcpdump.txt';
 
@@ -88,6 +73,34 @@ app.get('/tcpdump-stop', (req, res) => {
 
     res.sendStatus(200);
 })
+
+app.get('/proxy-request', function(req,res) {
+    const requestUrl = req.query.url;
+    console.log(`Received request for ${requestUrl} over the Tor circuit. Proxying it to the final destination...`);
+
+    https.get('https://' + requestUrl,  externalRequest => {
+        externalRequest.pipe(process.stdout);
+        console.log(externalRequest)
+        res.sendStatus(200)
+    }).on("error", err => {
+        console.error('Error: ', err.message)
+        res.send(err.message)
+        return;
+    })
+});
+
+app.get('/get-tcpdump-from-proxy-server', (req,res) => {
+    console.log(`Sending  ${outputFile} to the client`);
+
+    res.sendFile(outputFile, (err) => {
+        if (err) {
+            console.error('Error sending file:', err);
+            res.status(err.status || 500).send('Error sending tcpdump file');
+        } else {
+            console.log('Tcpdump file sent successfully');
+        }
+    });
+});
 
 // Start the server
 app.listen(PORT, HOST, () => {
