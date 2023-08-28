@@ -55,9 +55,8 @@ app.get('/tcpdump-server-start', (req, res) => {
         if (error) {console.error(`Error: ${error.message}`); res.send(error.message);return;}
 
         currentTcpdumpPID = stdout.replace(/\r?\n$/, '') // remove carriage return at the end of line
+        res.send(`Proxy server: tcpdump is started successfully \n${currentTcpdumpProcessInfo}`);
     });
-
-    res.send(`Proxy server: tcpdump is started successfully \n${currentTcpdumpProcessInfo}`);
 })
 
 app.get('/tcpdump-server-stop', (req, res) => {
@@ -70,9 +69,8 @@ app.get('/tcpdump-server-stop', (req, res) => {
         if (stderr) {console.error(`stderr: ${stderr}`); res.send(error.message); return;}
 
         console.log('tcpdump with PID ' + currentTcpdumpPID + ' is stopped.')
+        res.send(`Proxy server: tcpdump with PID ${currentTcpdumpPID} is stopped`);
     });
-
-    res.send(`Proxy server: tcpdump with PID ${currentTcpdumpPID} is stopped`);
 })
 
 app.get('/proxy-request', function(req,res) {
