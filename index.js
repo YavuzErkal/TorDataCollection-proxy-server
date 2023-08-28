@@ -1,8 +1,8 @@
 const express = require('express');
+const morgan = require("morgan");
 const cors = require("cors")
 const https = require('https');
 const {spawn, exec} = require("node:child_process");
-const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const app = express(); // Create Express Server
 
@@ -22,34 +22,8 @@ app.get('/check-server', (req, res, next) => {
     res.send('Proxy server is running');
 });
 
-// Proxy endpoints
-app.use('/proxy-request-test',
-    createProxyMiddleware({
-        //target: API_SERVICE_URL,
-        changeOrigin: true,
-        /*pathRewrite: {
-            [`^/proxy-request-test`]: '',
-        },*/
-    }),
-    (req, res) => {
-        const requestUrl = req.query.url;
-        console.log(`Received request for ${requestUrl} over the Tor circuit. Proxying it to the final destination...`);
-
-        https.get('https://' + requestUrl,  res => {
-            res.pipe(process.stdout);
-            console.log(res)
-        }).on("error", err => {
-            console.error('Error: ', err.message)
-            res.send(err.message)
-            return;
-        })
-
-        res.sendStatus(200);
-    }
-);
-
 app.get('/proxy-request', function(req,res) {
-    /*const requestUrl = req.query.url;
+    const requestUrl = req.query.url;
     console.log(`Received request for ${requestUrl} over the Tor circuit. Proxying it to the final destination...`);
 
     https.get('https://' + requestUrl,  res => {
@@ -61,7 +35,7 @@ app.get('/proxy-request', function(req,res) {
         return;
     })
 
-    res.sendStatus(200)*/
+    res.sendStatus(200)
 });
 
 const networkInterface = 'eth0';
