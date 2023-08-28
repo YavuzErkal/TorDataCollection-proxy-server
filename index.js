@@ -84,7 +84,7 @@ app.get('/proxy-request', function(req,res) {
         res.send(`Request has been sent to: 'https:\/\/${requestUrl}'`);
     }).on("error", err => {
         console.error('Error: ', err.message)
-        res.send(err.message)
+        res.status(404).send(err.message);
     })
 });
 
