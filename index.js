@@ -80,6 +80,7 @@ app.get('/proxy-request', function(req,res) {
     https.get('https://' + requestUrl,  externalRequest => {
         //externalRequest.pipe(process.stdout);
         //console.log(externalRequest)
+        console.log('hoppa')
         res.send(`Request has been sent to: 'https:// + ${requestUrl}'`)
     }).on("error", err => {
         console.error('Error: ', err.message)
