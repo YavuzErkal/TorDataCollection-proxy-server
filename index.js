@@ -75,16 +75,15 @@ app.get('/tcpdump-server-stop', (req, res) => {
 
 app.get('/proxy-request', function(req,res) {
     const requestUrl = req.query.url;
-    console.log(`Received request for ${requestUrl} over the Tor circuit. Proxying it to the final destination...`);
+    console.log(`Received request for ${requestUrl} over the Tor circuit. Proxying it to the final destination`);
 
     https.get('https://' + requestUrl,  externalRequest => {
-        externalRequest.pipe(process.stdout);
-        console.log(externalRequest)
-        res.sendStatus(200)
+        //externalRequest.pipe(process.stdout);
+        //console.log(externalRequest)
+        res.send(`Request has been sent to: 'https:// + ${requestUrl}'`)
     }).on("error", err => {
         console.error('Error: ', err.message)
         res.send(err.message)
-        return;
     })
 });
 
