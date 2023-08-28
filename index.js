@@ -43,10 +43,11 @@ app.get('/tcpdump-server-start', (req, res) => {
 
     const getTcpdumpPID =  `ps -A | grep tcpdump | grep -v grep | awk '{print $1}'`
     const getTcpdumpInfo =  `ps -A | grep tcpdump | grep -v grep`
+    let currentTcpdumpProcessInfo;
 
     exec(getTcpdumpInfo, (error, stdout) => {
         if (error) {console.error(`Error: ${error.message}`); res.send(error.message); return;}
-        const currentTcpdumpProcessInfo = stdout.replace(/\r?\n$/, '') // remove carriage return at the end of line
+        currentTcpdumpProcessInfo = stdout.replace(/\r?\n$/, '') // remove carriage return at the end of line
         console.log(`Current tcpdump process: ${currentTcpdumpProcessInfo}`);
     });
 
@@ -56,7 +57,7 @@ app.get('/tcpdump-server-start', (req, res) => {
         currentTcpdumpPID = stdout.replace(/\r?\n$/, '') // remove carriage return at the end of line
     });
 
-    res.sendStatus(200);
+    res.send(`Proxy server: tcpdump is started successfully \n${currentTcpdumpProcessInfo}`);
 })
 
 app.get('/tcpdump-server-stop', (req, res) => {
@@ -71,7 +72,7 @@ app.get('/tcpdump-server-stop', (req, res) => {
         console.log('tcpdump with PID ' + currentTcpdumpPID + ' is stopped.')
     });
 
-    res.sendStatus(200);
+    res.send(`Proxy server: tcpdump with PID ${currentTcpdumpPID} is stopped`);
 })
 
 app.get('/proxy-request', function(req,res) {
