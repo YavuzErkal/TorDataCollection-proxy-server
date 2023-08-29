@@ -2,12 +2,17 @@ const express = require('express');
 const cors = require("cors")
 const https = require('https');
 const {spawn, exec} = require("node:child_process");
+const util = require('util');
 
 const app = express(); // Create Express Server
 
-// Configuration
 const PORT = 3000;
 const HOST = "localhost";
+const outputFile = '/root/server-tcpdump.txt';
+const execPromise = util.promisify(exec);
+let networkInterface;
+let currentTcpdumpPID;
+
 
 app.use(cors()); // Cors
 app.use(express.static('public')); // serve files in the public directory
@@ -21,48 +26,36 @@ app.get('/check-proxy-server', (req, res, next) => {
     res.send('Proxy server is running');
 });
 
-const outputFile = '/root/server-tcpdump.txt';
-let networkInterface;
-let currentTcpdumpPID = 0;
-
-app.get('/tcpdump-server-start', (req, res) => {
+app.get('/tcpdump-server-start', async (req, res) => {
     const deleteLogFileIfExisting = `if [ -f /root/server-tcpdump.txt ]; then
                                             echo "Deleting previous log file ${outputFile}";
                                             echo -n "Creating new log file ${outputFile}";
                                             rm /root/server-tcpdump.txt;
                                      else
                                          echo -n "Creating new log file ${outputFile} to save tcpdump values"; fi`;
-    exec(deleteLogFileIfExisting, (error, stdout) => {
-        if (error) {console.error(`Error: ${error.message}`); res.send(error.message); return;}
-        console.log(stdout);
-        console.log("Starting tcpdump at server side")
-    })
+    const { stdout: deleteLogFileResult } = await execPromise(deleteLogFileIfExisting);
+    console.log(`${deleteLogFileResult}\nStarting tcpdump at server side`);
+
 
     const getNetworkInterface = "tcpdump -D | awk -F '[. ]' 'NR==1 {print $2}'";
-    exec(getNetworkInterface, (error, stdout) => {
-        if (error) {console.error(`Error: ${error.message}`); return;}
-        networkInterface = stdout.replace(/\r?\n$/, '') // remove carriage return at the end of line;
-        console.log(`Network interface: ${networkInterface}`);
-    })
+    const { stdout: networkInterface_ } = await execPromise(getNetworkInterface);
+    networkInterface = networkInterface_.replace(/\r?\n$/, '');
+    console.log(`Network interface: ${networkInterface}`);
 
     spawn('tcpdump', ["-i", networkInterface, "-w", outputFile])
 
-    const getTcpdumpPID =  `ps -A | grep tcpdump | grep -v grep | awk '{print $1}'`
-    const getTcpdumpInfo =  `ps -A | grep tcpdump | grep -v grep`
-    let currentTcpdumpProcessInfo;
+    const getTcpdumpPID = `ps -A | grep tcpdump | grep -v grep | awk '{print $1}'`
+    const getTcpdumpInfo = `ps -A | grep tcpdump | grep -v grep`
 
-    exec(getTcpdumpInfo, (error, stdout) => {
-        if (error) {console.error(`Error: ${error.message}`); res.send(error.message); return;}
-        currentTcpdumpProcessInfo = stdout.replace(/\r?\n$/, '') // remove carriage return at the end of line
-        console.log(`Current tcpdump process: ${currentTcpdumpProcessInfo}`);
-    });
+    const { stdout: tcpdumpInfo } = await execPromise(getTcpdumpInfo);
+    const currentTcpdumpProcessInfo = tcpdumpInfo.replace(/\r?\n$/, '');
+    console.log(`Current tcpdump process: ${currentTcpdumpProcessInfo}`);
 
-    exec(getTcpdumpPID, (error, stdout) => {
-        if (error) {console.error(`Error: ${error.message}`); res.send(error.message);return;}
 
-        currentTcpdumpPID = stdout.replace(/\r?\n$/, '') // remove carriage return at the end of line
-        res.send(`Proxy server: tcpdump is started successfully \n${currentTcpdumpProcessInfo}`);
-    });
+    const { stdout: tcpdumpPID } = await execPromise(getTcpdumpPID);
+    currentTcpdumpPID = tcpdumpPID.replace(/\r?\n$/, '');
+    res.send(`Proxy server: tcpdump is started successfully \n${currentTcpdumpProcessInfo}`);
+
 })
 
 app.get('/tcpdump-server-stop', (req, res) => {
