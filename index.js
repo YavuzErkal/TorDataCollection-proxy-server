@@ -21,9 +21,8 @@ app.get('/check-proxy-server', (req, res, next) => {
     res.send('Proxy server is running');
 });
 
-const networkInterface = 'eth0';
 const outputFile = '/root/server-tcpdump.txt';
-
+let networkInterface;
 let currentTcpdumpPID = 0;
 
 app.get('/tcpdump-server-start', (req, res) => {
@@ -37,6 +36,13 @@ app.get('/tcpdump-server-start', (req, res) => {
         if (error) {console.error(`Error: ${error.message}`); res.send(error.message); return;}
         console.log(stdout);
         console.log("Starting tcpdump at server side")
+    })
+
+    const getNetworkInterface = "tcpdump -D | awk -F '[. ]' 'NR==1 {print $2}'";
+    exec(getNetworkInterface, (error, stdout) => {
+        if (error) {console.error(`Error: ${error.message}`); return;}
+        networkInterface = stdout.replace(/\r?\n$/, '') // remove carriage return at the end of line;
+        console.log(`Network interface: ${networkInterface}`);
     })
 
     spawn('tcpdump', ["-i", networkInterface, "-w", outputFile])
