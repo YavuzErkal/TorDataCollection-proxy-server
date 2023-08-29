@@ -8,7 +8,7 @@ const app = express(); // Create Express Server
 
 const PORT = 3000;
 const HOST = "localhost";
-const outputFile = '/root/server-tcpdump.txt';
+const outputFile = '/root';
 const execPromise = util.promisify(exec);
 let networkInterface;
 let currentTcpdumpPID;
@@ -42,7 +42,8 @@ app.get('/tcpdump-server-start', async (req, res) => {
     networkInterface = networkInterface_.replace(/\r?\n$/, '');
     console.log(`Network interface: ${networkInterface}`);
 
-    spawn('tcpdump', ["-i", networkInterface, "-w", outputFile])
+    spawn('tcpdump', ["-i", networkInterface, "-w", `${outputFile}/${new Date()}-server-tcpdump.txt`])
+
 
     const getTcpdumpPID = `ps -A | grep tcpdump | grep -v grep | awk '{print $1}'`
     const getTcpdumpInfo = `ps -A | grep tcpdump | grep -v grep`
@@ -77,9 +78,6 @@ app.get('/proxy-request', function(req,res) {
     console.log(`Received request for ${requestUrl} over the Tor circuit. Proxying it to the final destination`);
 
     https.get('https://' + requestUrl,  externalRequest => {
-        //externalRequest.pipe(process.stdout);
-        //console.log(externalRequest)
-        console.log('hoppa');
         res.send(`Request has been sent to: 'https:\/\/${requestUrl}'`);
     }).on("error", err => {
         console.error('Error: ', err.message)
