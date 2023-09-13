@@ -49,9 +49,12 @@ app.get('/tcpdump-server-start', async (req, res) => {
 
     //res.send(`Proxy server: tcpdump is started successfully \n${currentTcpdumpProcessInfo}`);
 
-    const downloadLink = `/download-tcpdump-file?file=${outputFile}`;
-    res.send(`Proxy server: tcpdump is started successfully. 
-        <br> Download the tcpdump file: <a href="${downloadLink}">${outputFile}</a>`);
+    const jsonResponse = {
+        message: 'Proxy server: tcpdump is started successfully.',
+        outputFile: outputFile
+    };
+
+    res.json(jsonResponse)
 })
 
 app.get('/tcpdump-server-stop', (req, res) => {
