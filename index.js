@@ -26,15 +26,6 @@ app.get('/check-proxy-server', (req, res, next) => {
 });
 
 app.get('/tcpdump-server-start', async (req, res) => {
-    /*const deleteLogFileIfExisting = `if [ -f /root/server-tcpdump.txt ]; then
-                                            echo "Deleting previous log file ${outputFile}";
-                                            echo -n "Creating new log file ${outputFile}";
-                                            rm /root/server-tcpdump.txt;
-                                     else
-                                         echo -n "Creating new log file ${outputFile} to save tcpdump values"; fi`;*/
-    //const { stdout: deleteLogFileResult } = await execPromise(deleteLogFileIfExisting);
-    //console.log(`${deleteLogFileResult}\nStarting tcpdump at server side`);
-
     console.log(`Starting tcpdump at server side`);
 
     const getNetworkInterface = "tcpdump -D | awk -F '[. ]' 'NR==1 {print $2}'";
@@ -56,9 +47,14 @@ app.get('/tcpdump-server-start', async (req, res) => {
     const { stdout: tcpdumpPID } = await execPromise(getTcpdumpPID);
     currentTcpdumpPID = tcpdumpPID.replace(/\r?\n$/, '');
 
-    res.set('X-tcpdump-filename', outputFile);
+    //res.send(`Proxy server: tcpdump is started successfully \n${currentTcpdumpProcessInfo}`);
 
-    res.send(`Proxy server: tcpdump is started successfully \n${currentTcpdumpProcessInfo}`);
+    res.json({
+        message: `Proxy server: tcpdump is started successfully`,
+        outputFile: outputFile,
+        currentTcpdumpProcessInfo: currentTcpdumpProcessInfo,
+        currentTcpdumpPID: currentTcpdumpPID
+    });
 })
 
 app.get('/tcpdump-server-stop', (req, res) => {
