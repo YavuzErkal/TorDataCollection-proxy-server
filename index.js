@@ -4,7 +4,7 @@ const https = require('https');
 const {spawn, exec} = require("node:child_process");
 const util = require('util');
 
-const app = express(); // Create Express Server
+const app = express();
 
 const PORT = 3000;
 const HOST = "localhost";
@@ -12,7 +12,6 @@ const outputFile = '/root';
 const execPromise = util.promisify(exec);
 let networkInterface;
 let currentTcpdumpPID;
-
 
 app.use(cors()); // Cors
 app.use(express.static('public')); // serve files in the public directory
@@ -27,15 +26,16 @@ app.get('/check-proxy-server', (req, res, next) => {
 });
 
 app.get('/tcpdump-server-start', async (req, res) => {
-    const deleteLogFileIfExisting = `if [ -f /root/server-tcpdump.txt ]; then
+    /*const deleteLogFileIfExisting = `if [ -f /root/server-tcpdump.txt ]; then
                                             echo "Deleting previous log file ${outputFile}";
                                             echo -n "Creating new log file ${outputFile}";
                                             rm /root/server-tcpdump.txt;
                                      else
-                                         echo -n "Creating new log file ${outputFile} to save tcpdump values"; fi`;
-    const { stdout: deleteLogFileResult } = await execPromise(deleteLogFileIfExisting);
-    console.log(`${deleteLogFileResult}\nStarting tcpdump at server side`);
+                                         echo -n "Creating new log file ${outputFile} to save tcpdump values"; fi`;*/
+    //const { stdout: deleteLogFileResult } = await execPromise(deleteLogFileIfExisting);
+    //console.log(`${deleteLogFileResult}\nStarting tcpdump at server side`);
 
+    console.log(`Starting tcpdump at server side`);
 
     const getNetworkInterface = "tcpdump -D | awk -F '[. ]' 'NR==1 {print $2}'";
     const { stdout: networkInterface_ } = await execPromise(getNetworkInterface);
@@ -97,6 +97,17 @@ app.get('/get-tcpdump-from-proxy-server', (req,res) => {
         }
     });
 });
+
+function formatToCustomString(date) {
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const year = date.getFullYear();
+
+    return `${day}.${month}.${year} ${hours}:${minutes}:${seconds}`;
+}
 
 // Start the server
 app.listen(PORT, HOST, () => {
