@@ -55,8 +55,10 @@ app.get('/tcpdump-server-start', async (req, res) => {
 
     const { stdout: tcpdumpPID } = await execPromise(getTcpdumpPID);
     currentTcpdumpPID = tcpdumpPID.replace(/\r?\n$/, '');
-    res.send(`Proxy server: tcpdump is started successfully \n${currentTcpdumpProcessInfo}`);
 
+    res.setHeader('X-tcpdump-filename', outputFile);
+
+    res.send(`Proxy server: tcpdump is started successfully \n${currentTcpdumpProcessInfo}`);
 })
 
 app.get('/tcpdump-server-stop', (req, res) => {
