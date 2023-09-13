@@ -83,7 +83,7 @@ app.get('/proxy-request', function(req,res) {
     })
 });
 
-/*app.get('/get-tcpdump-from-proxy-server', (req,res) => {
+app.get('/get-tcpdump-from-proxy-server', (req,res) => {
     console.log(`Sending  ${outputFile} to the client`);
 
     res.sendFile(outputFile, (err) => {
@@ -94,7 +94,7 @@ app.get('/proxy-request', function(req,res) {
             console.log('Tcpdump file sent successfully');
         }
     });
-});*/
+});
 
 app.get('/download-tcpdump-file', (req, res) => {
     const outputFile = req.query.file;
