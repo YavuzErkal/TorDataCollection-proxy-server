@@ -47,14 +47,11 @@ app.get('/tcpdump-server-start', async (req, res) => {
     const { stdout: tcpdumpPID } = await execPromise(getTcpdumpPID);
     currentTcpdumpPID = tcpdumpPID.replace(/\r?\n$/, '');
 
-    res.send(`Proxy server: tcpdump is started successfully \n${currentTcpdumpProcessInfo}`);
+    //res.send(`Proxy server: tcpdump is started successfully \n${currentTcpdumpProcessInfo}`);
 
-    /*res.json({
-        message: `Proxy server: tcpdump is started successfully`,
-        outputFile: outputFile,
-        currentTcpdumpProcessInfo: currentTcpdumpProcessInfo,
-        currentTcpdumpPID: currentTcpdumpPID
-    });*/
+    const downloadLink = `/download-tcpdump-file?file=${outputFile}`;
+    res.send(`Proxy server: tcpdump is started successfully. 
+        <br> Download the tcpdump file: <a href="${downloadLink}">${outputFile}</a>`);
 })
 
 app.get('/tcpdump-server-stop', (req, res) => {
@@ -96,7 +93,9 @@ app.get('/proxy-request', function(req,res) {
     });
 });*/
 
-app.get('/get-tcpdump-from-proxy-server', (req, res) => {
+app.get('/download-tcpdump-file', (req, res) => {
+    const outputFile = req.query.file;
+
     if (!outputFile) {
         return res.status(400).send(`${outputFile} does not exist!`);
     }
