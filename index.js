@@ -8,8 +8,8 @@ const app = express();
 
 const PORT = 3000;
 const HOST = "localhost";
-const outputFile = '/root';
 const execPromise = util.promisify(exec);
+let outputFile;
 let networkInterface;
 let currentTcpdumpPID;
 
@@ -42,8 +42,8 @@ app.get('/tcpdump-server-start', async (req, res) => {
     networkInterface = networkInterface_.replace(/\r?\n$/, '');
     console.log(`Network interface: ${networkInterface}`);
 
-    spawn('tcpdump', ["-i", networkInterface, "-w", `${outputFile}/${new Date()}-server-tcpdump.txt`])
-
+    outputFile = `/root/${formatToCustomString(new Date())}-server-tcpdump.txt`;
+    spawn('tcpdump', ["-i", networkInterface, "-w", outputFile])
 
     const getTcpdumpPID = `ps -A | grep tcpdump | grep -v grep | awk '{print $1}'`
     const getTcpdumpInfo = `ps -A | grep tcpdump | grep -v grep`
