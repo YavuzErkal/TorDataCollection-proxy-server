@@ -47,14 +47,14 @@ app.get('/tcpdump-server-start', async (req, res) => {
     const { stdout: tcpdumpPID } = await execPromise(getTcpdumpPID);
     currentTcpdumpPID = tcpdumpPID.replace(/\r?\n$/, '');
 
-    //res.send(`Proxy server: tcpdump is started successfully \n${currentTcpdumpProcessInfo}`);
+    res.send(`Proxy server: tcpdump is started successfully \n${currentTcpdumpProcessInfo}`);
 
-    res.json({
+    /*res.json({
         message: `Proxy server: tcpdump is started successfully`,
         outputFile: outputFile,
         currentTcpdumpProcessInfo: currentTcpdumpProcessInfo,
         currentTcpdumpPID: currentTcpdumpPID
-    });
+    });*/
 })
 
 app.get('/tcpdump-server-stop', (req, res) => {
@@ -83,7 +83,7 @@ app.get('/proxy-request', function(req,res) {
     })
 });
 
-app.get('/get-tcpdump-from-proxy-server', (req,res) => {
+/*app.get('/get-tcpdump-from-proxy-server', (req,res) => {
     console.log(`Sending  ${outputFile} to the client`);
 
     res.sendFile(outputFile, (err) => {
@@ -92,6 +92,20 @@ app.get('/get-tcpdump-from-proxy-server', (req,res) => {
             res.status(err.status || 500).send('Error sending tcpdump file');
         } else {
             console.log('Tcpdump file sent successfully');
+        }
+    });
+});*/
+
+app.get('/get-tcpdump-from-proxy-server', (req, res) => {
+    if (!outputFile) {
+        return res.status(400).send(`${outputFile} does not exist!`);
+    }
+
+    // Use res.download() to send the file as a downloadable attachment
+    res.download(outputFile, (err) => {
+        if (err) {
+            console.error('Error while downloading file:', err);
+            res.status(500).send('Error downloading file.');
         }
     });
 });
