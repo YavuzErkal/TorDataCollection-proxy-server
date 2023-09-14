@@ -1,14 +1,18 @@
 const express = require('express');
 const cors = require("cors")
 const https = require('https');
+const fs = require('fs');
 const {spawn, exec} = require("node:child_process");
 const util = require('util');
+const archiver = require('archiver');
+const path = require("path");
 
 const app = express();
 
 const PORT = 3000;
 const HOST = "localhost";
 const execPromise = util.promisify(exec);
+const outputDirectory = path.join(__dirname, 'tcpdump_logs');
 let outputFile;
 let networkInterface;
 let currentTcpdumpPID;
@@ -33,7 +37,7 @@ app.get('/tcpdump-server-start', async (req, res) => {
     networkInterface = networkInterface_.replace(/\r?\n$/, '');
     console.log(`Network interface: ${networkInterface}`);
 
-    outputFile = `/root/${formatToCustomString(new Date())}-server-tcpdump.txt`;
+    outputFile = `${outputDirectory}/${formatToCustomString(new Date())}-server-tcpdump.txt`;
     spawn('tcpdump', ["-i", networkInterface, "-w", outputFile])
 
     const getTcpdumpPID = `ps -A | grep tcpdump | grep -v grep | awk '{print $1}'`
@@ -96,19 +100,40 @@ app.get('/get-tcpdump-from-proxy-server', (req,res) => {
     });
 });
 
-app.get('/download-tcpdump-file', (req, res) => {
-    const outputFile = req.query.file;
-
-    if (!outputFile) {
-        return res.status(400).send(`${outputFile} does not exist!`);
-    }
-
-    // Use res.download() to send the file as a downloadable attachment
-    res.download(outputFile, (err) => {
+app.get('/download-tcpdump-files', (req, res) => {
+    fs.readdir(outputDirectory, (err, files) => {
         if (err) {
-            console.error('Error while downloading file:', err);
-            res.status(500).send('Error downloading file.');
+            console.error('Error reading directory:', err);
+            return res.status(500).send('Internal server error.');
         }
+
+        // Filter the files to only get .txt files
+        const txtFiles = files.filter(file => path.extname(file) === '.txt');
+        if (!txtFiles.length) {
+            return res.status(404).send('No .txt files found.');
+        }
+
+        // Use archiver to create a .zip file
+        const archive = archiver('zip', {zlib: {level: 9}});
+
+        archive.on('error', (err) => {
+            console.error('Archiver error:', err);
+            res.status(500).send('Error creating archive.');
+        });
+
+        // Set the archive name
+        res.attachment('tcpdump-files.zip');
+
+        // Pipe archive data to the response
+        archive.pipe(res);
+
+        // Append all txt files to the archive
+        txtFiles.forEach(file => {
+            const filePath = path.join(directoryPath, file);
+            archive.append(fs.createReadStream(filePath), { name: file });
+        });
+
+        archive.finalize();
     });
 });
 
