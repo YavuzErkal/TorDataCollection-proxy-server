@@ -129,7 +129,7 @@ app.get('/download-tcpdump-files', (req, res) => {
 
         // Append all txt files to the archive
         txtFiles.forEach(file => {
-            const filePath = path.join(__dirname, 'export', file);
+            const filePath = path.join(__dirname, 'tcpdump_logs', file);
             archive.append(fs.createReadStream(filePath), { name: file });
         });
 
