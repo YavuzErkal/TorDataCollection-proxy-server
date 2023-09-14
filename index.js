@@ -51,7 +51,7 @@ app.get('/tcpdump-server-start', async (req, res) => {
 
     const jsonResponse = {
         message: 'Proxy server: tcpdump is started successfully.',
-        outputFile: outputFile
+        outputFile: outputFile.replace('/root', '')
     };
 
     res.json(jsonResponse)
