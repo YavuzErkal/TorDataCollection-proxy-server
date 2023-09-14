@@ -134,6 +134,7 @@ app.get('/download-tcpdump-files', (req, res) => {
         });
 
         archive.finalize();
+        res.send('tcpdump files have been saved as a .zip file.')
     });
 });
 
