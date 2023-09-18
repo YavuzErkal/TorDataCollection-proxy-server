@@ -164,6 +164,33 @@ app.get('/download-tcpdump-zip', (req, res) => {
     return res.end(zipFileContents);
 });
 
+app.get('/delete-tcpdump-files-on-proxy-server', (req, res) => {
+    const folderPath = 'tcpdump_logs';
+
+    try {
+        const files = fs.readdirSync(folderPath);
+        let errorOccurred = false;
+        files.forEach(file => {
+            fs.unlink(path.join(folderPath, file), (err) => {
+                if (err) {
+                    console.error('Error deleting file:', file, err);
+                    errorOccurred = true;
+                }
+            })
+        })
+
+        if (errorOccurred)
+            res.status(500).send('Some files could not be deleted.');
+        else
+            res.send('All files deleted successfully.');
+    } catch (err) {
+        console.error('Error reading the directory:', err);
+        res.status(500).send('Error occurred while processing the request.');
+    }
+
+
+})
+
 function formatToCustomString(date) {
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
