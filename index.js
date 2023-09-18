@@ -6,6 +6,7 @@ const {spawn, exec} = require("node:child_process");
 const util = require('util');
 const archiver = require('archiver');
 const path = require("path");
+const AdmZip = require('adm-zip');
 
 const app = express();
 
@@ -100,7 +101,7 @@ app.get('/get-tcpdump-from-proxy-server', (req,res) => {
     });
 });
 
-app.get('/download-tcpdump-files', (req, res) => {
+/*app.get('/download-tcpdump-files', (req, res) => {
     fs.readdir(outputDirectory, (err, files) => {
         if (err) {
             console.error('Error reading directory:', err);
@@ -137,29 +138,30 @@ app.get('/download-tcpdump-files', (req, res) => {
         console.log('tcpdump files have been saved as a .zip file')
         res.send('tcpdump files have been saved as a .zip file');
     });
-});
+});*/
 
-app.get('/download-test', (req, res) => {
-    // Create the zip archive
-    let archive = archiver('zip', {
-        zlib: { level: 9 } // Set the compression level.
-    });
+app.get('/download-tcpdump-zip', (req, res) => {
+    console.log('Sending tcpdump .zip file to the client')
 
-    // Set the response headers
-    res.setHeader('Content-Disposition', 'attachment; filename=example.zip');
-    res.setHeader('Content-Type', 'application/zip');
+    const zip = new AdmZip();
 
-    // Pipe the archive data to the response object
-    archive.pipe(res);
+    const folderPath = 'tcpdump_logs';
+    const files = fs.readdirSync(folderPath);
 
-    // Append files from a directory
-    archive.directory('/export', false, null);
+    files.forEach(file => {
+        zip.addLocalFile('tcpdump_logs/' + file);
+    })
 
-    // Finalize the archive
-    archive.finalize().catch((err) => {
-        console.error('Error finalizing archive:', err);
-        res.status(500).send({ error: 'Failed to finalize archive' });
-    });
+
+    // get everything as a buffer
+    const zipFileContents = zip.toBuffer();
+    const fileName = 'uploads.zip';
+    const fileType = 'application/zip';
+    res.writeHead(200, {
+        'Content-Disposition': `attachment; filename="${fileName}"`,
+        'Content-Type': fileType,
+    })
+    return res.end(zipFileContents);
 });
 
 function formatToCustomString(date) {
