@@ -139,6 +139,29 @@ app.get('/download-tcpdump-files', (req, res) => {
     });
 });
 
+app.get('/download-test', (req, res) => {
+    // Create the zip archive
+    let archive = archiver('zip', {
+        zlib: { level: 9 } // Set the compression level.
+    });
+
+    // Set the response headers
+    res.setHeader('Content-Disposition', 'attachment; filename=example.zip');
+    res.setHeader('Content-Type', 'application/zip');
+
+    // Pipe the archive data to the response object
+    archive.pipe(res);
+
+    // Append files from a directory
+    archive.directory('/export', false, null);
+
+    // Finalize the archive
+    archive.finalize().catch((err) => {
+        console.error('Error finalizing archive:', err);
+        res.status(500).send({ error: 'Failed to finalize archive' });
+    });
+});
+
 function formatToCustomString(date) {
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
