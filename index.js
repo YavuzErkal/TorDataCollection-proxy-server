@@ -52,8 +52,6 @@ app.get('/tcpdump-server-start', async (req, res) => {
     const { stdout: tcpdumpPID } = await execPromise(getTcpdumpPID);
     currentTcpdumpPID = tcpdumpPID.replace(/\r?\n$/, '');
 
-    //res.send(`Proxy server: tcpdump is started successfully \n${currentTcpdumpProcessInfo}`);
-
     const jsonResponse = {
         message: 'Proxy server: tcpdump is started successfully.',
         outputFile: outputFile.replace('/root/', '')
@@ -64,9 +62,7 @@ app.get('/tcpdump-server-start', async (req, res) => {
 
 app.get('/tcpdump-server-stop', (req, res) => {
     console.log("Stopping tcpdump")
-
     const tcpdumpStop = 'kill ' + currentTcpdumpPID
-
     exec(tcpdumpStop, (error, stdout, stderr) => {
         if (error) {console.error(`Error: ${error.message}`); res.send(error.message); return;}
         if (stderr) {console.error(`stderr: ${stderr}`); res.send(error.message); return;}
@@ -88,58 +84,6 @@ app.get('/proxy-request', function(req,res) {
     })
 });
 
-app.get('/get-tcpdump-from-proxy-server', (req,res) => {
-    console.log(`Sending  ${outputFile} to the client`);
-
-    res.sendFile(outputFile, (err) => {
-        if (err) {
-            console.error('Error sending file:', err);
-            res.status(err.status || 500).send('Error sending tcpdump file');
-        } else {
-            console.log('Tcpdump file sent successfully');
-        }
-    });
-});
-
-/*app.get('/download-tcpdump-files', (req, res) => {
-    fs.readdir(outputDirectory, (err, files) => {
-        if (err) {
-            console.error('Error reading directory:', err);
-            return res.status(500).send('Internal server error.');
-        }
-
-        // Filter the files to only get .txt files
-        const txtFiles = files.filter(file => path.extname(file) === '.txt');
-        if (!txtFiles.length) {
-            return res.status(404).send('No .txt files found.');
-        }
-
-        // Use archiver to create a .zip file
-        const archive = archiver('zip', {zlib: {level: 9}});
-
-        archive.on('error', (err) => {
-            console.error('Archiver error:', err);
-            res.status(500).send('Error creating archive.');
-        });
-
-        // Set the archive name
-        res.attachment('tcpdump-files.zip');
-
-        // Pipe archive data to the response
-        archive.pipe(res);
-
-        // Append all txt files to the archive
-        txtFiles.forEach(file => {
-            const filePath = path.join(__dirname, 'tcpdump_logs', file);
-            archive.append(fs.createReadStream(filePath), { name: file });
-        });
-
-        archive.finalize();
-        console.log('tcpdump files have been saved as a .zip file')
-        res.send('tcpdump files have been saved as a .zip file');
-    });
-});*/
-
 app.get('/download-tcpdump-zip', (req, res) => {
     console.log('Sending tcpdump .zip file to the client')
 
@@ -155,11 +99,11 @@ app.get('/download-tcpdump-zip', (req, res) => {
 
     // get everything as a buffer
     const zipFileContents = zip.toBuffer();
-    const fileName = 'uploads.zip';
-    const fileType = 'application/zip';
+    /*const fileName = 'uploads.zip';
+    const fileType = 'application/zip';*/
     res.writeHead(200, {
-        'Content-Disposition': `attachment; filename="${fileName}"`,
-        'Content-Type': fileType,
+        'Content-Disposition': `attachment; filename="tcpdump.zip"`,
+        'Content-Type': 'application/zip',
     })
     return res.end(zipFileContents);
 });
