@@ -181,8 +181,10 @@ app.get('/delete-tcpdump-files-on-proxy-server', (req, res) => {
 
         if (errorOccurred)
             res.status(500).send('Some files could not be deleted.');
-        else
+        else {
+            console.log('All files deleted successfully.')
             res.send('All files deleted successfully.');
+        }
     } catch (err) {
         console.error('Error reading the directory:', err);
         res.status(500).send('Error occurred while processing the request.');
