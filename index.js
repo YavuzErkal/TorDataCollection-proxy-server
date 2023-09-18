@@ -165,8 +165,8 @@ app.get('/download-tcpdump-zip', (req, res) => {
 });
 
 app.get('/delete-tcpdump-files-on-proxy-server', (req, res) => {
+    console.log('Request received to delete all tcpdump files')
     const folderPath = 'tcpdump_logs';
-
     try {
         const files = fs.readdirSync(folderPath);
         let errorOccurred = false;
@@ -187,8 +187,6 @@ app.get('/delete-tcpdump-files-on-proxy-server', (req, res) => {
         console.error('Error reading the directory:', err);
         res.status(500).send('Error occurred while processing the request.');
     }
-
-
 })
 
 function formatToCustomString(date) {
