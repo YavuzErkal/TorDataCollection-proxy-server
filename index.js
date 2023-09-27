@@ -148,5 +148,5 @@ function formatToCustomString(date) {
 
 // Start the server
 app.listen(PORT, HOST, () => {
-    console.log(`Starting Proxy at ${HOST}:${PORT}`);
+    console.log(`Starting Proxy Server at ${HOST}:${PORT}`);
 });
