@@ -84,6 +84,19 @@ app.get('/proxy-request', function(req,res) {
     })
 });
 
+app.get('/proxy-request-again', function(req,res) {
+    const requestUrl = req.query.url;
+    console.log(`AGAIN Received request for ${requestUrl} over the Tor circuit. Proxying it to the final destination`);
+
+    https.get('https://' + requestUrl,  externalRequest => {
+        res.send(`Request has been sent to: 'https:\/\/${requestUrl}'`);
+    }).on("error", err => {
+        console.error('Error: ', err.message)
+        res.status(404).send(err.message);
+    })
+});
+
+
 app.get('/download-tcpdump-zip', (req, res) => {
     console.log('Sending tcpdump .zip file to the client')
 
