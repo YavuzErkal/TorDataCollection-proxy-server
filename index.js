@@ -76,7 +76,7 @@ app.get('/proxy-request', function(req,res) {
     const requestUrl = req.query.url;
     console.log(`Received request for ${requestUrl} over the Tor circuit. Proxying it to the final destination`);
 
-    https.get('https://' + requestUrl,  externalRequest => {
+    https.get('http://' + requestUrl,  externalRequest => {
         res.send(`Request has been sent to: 'https:\/\/${requestUrl}'`);
     }).on("error", err => {
         console.error('Error: ', err.message)
@@ -88,8 +88,8 @@ app.get('/proxy-request-again', function(req,res) {
     const requestUrl = req.query.url;
     console.log(`AGAIN Received request for ${requestUrl} over the Tor circuit. Proxying it to the final destination`);
 
-    https.get('https://' + requestUrl,  externalRequest => {
-        res.send(`Request has been sent to: 'https:\/\/${requestUrl}'`);
+    https.get('http://' + requestUrl,  externalRequest => {
+        res.send(`Request has been sent to: 'http:\/\/${requestUrl}'`);
     }).on("error", err => {
         console.error('Error: ', err.message)
         res.status(404).send(err.message);
