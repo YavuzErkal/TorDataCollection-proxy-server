@@ -11,7 +11,7 @@ const AdmZip = require('adm-zip');
 const app = express();
 
 const PORT = 3000;
-const HOST = "127.0.0.1";
+const HOST = "localhost";
 const execPromise = util.promisify(exec);
 const outputDirectory = path.join(__dirname, 'tcpdump_logs');
 let outputFile;
