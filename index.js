@@ -77,7 +77,7 @@ app.get('/proxy-request', function(req,res) {
     const requestUrl = req.query.url;
     console.log(`Received request for ${requestUrl} over the Tor circuit. Proxying it to the final destination`);
 
-    https.get('https://' + requestUrl,  {port: 6677}, externalRequest => {
+    https.get('https://' + requestUrl,  {port: 5678}, externalRequest => {
         res.send(`Request has been proxied to: 'https:\/\/${requestUrl}'`);
     }).on("error", err => {
         console.error('Error: ', err.message)
