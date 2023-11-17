@@ -83,7 +83,7 @@ app.get('/proxy-request', function(req,res) {
         port: 5678
     };
 
-    http.request(options, response => {
+    const proxyRequest = http.request(options, response => {
         response.setEncoding('utf8');
 
         let body = '';
@@ -106,6 +106,8 @@ app.get('/proxy-request', function(req,res) {
         console.error('Error: ', err.message)
         res.status(404).send(err.message);
     })
+
+    proxyRequest.end();
 
     // https.get(options, externalRequest => {
     //     res.send(`Request has been proxied to: 'https:\/\/${requestUrl}'`);
