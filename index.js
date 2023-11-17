@@ -7,6 +7,7 @@ const util = require('util');
 const archiver = require('archiver');
 const path = require("path");
 const AdmZip = require('adm-zip');
+const url = require("url");
 
 const app = express();
 
@@ -76,7 +77,7 @@ app.get('/proxy-request', function(req,res) {
     const requestUrl = req.query.url;
     console.log(`Received request for ${requestUrl} over the Tor circuit. Proxying it to the final destination`);
 
-    https.get('https://' + requestUrl,  externalRequest => {
+    https.get('https://' + requestUrl,  {port: 6677}, externalRequest => {
         res.send(`Request has been sent to: 'https:\/\/${requestUrl}'`);
     }).on("error", err => {
         console.error('Error: ', err.message)
