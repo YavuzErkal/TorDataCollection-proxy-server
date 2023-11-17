@@ -78,7 +78,7 @@ app.get('/proxy-request', function(req,res) {
     console.log(`Received request for ${requestUrl} over the Tor circuit. Proxying it to the final destination`);
 
     const options = {
-        host: `https://${requestUrl}`,
+        host: `${requestUrl}`,
         port: 5678
     };
 
