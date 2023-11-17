@@ -9,6 +9,8 @@ const path = require("path");
 const AdmZip = require('adm-zip');
 const url = require("url");
 const http = require('http');
+const axios = require('axios');
+
 
 const app = express();
 
@@ -79,35 +81,21 @@ app.get('/proxy-request', function(req,res) {
     console.log(`Received request for ${requestUrl} over the Tor circuit. Proxying it to the final destination`);
 
     const options = {
-        host: requestUrl,
-        port: 5678
+        method: 'GET',
+        url: 'https://facebook.com',
+        port: 5678,
     };
 
-    const proxyRequest = http.request(options, response => {
-        response.setEncoding('utf8');
-
-        let body = '';
-        response.on('data', (chunk) => {
-            body += chunk;
-        });
-
-        // When the response completes, parse the JSON and log the IP address
-        response.on('end', () => {
-            const data = JSON.parse(body);
-            console.log('data');
+    axios(options)
+        .then(response => {
+            const data = response.data;
             console.log(data);
-            console.log('data.body');
-            console.log(data.body);
-            res.send("data:" + data)
-            res.send("data.body:" + data.body)
+            res.send("Your data: " + data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            res.status(500).send('An error occurred');
         });
-
-    }).on("error", err => {
-        console.error('Error: ', err.message)
-        res.status(404).send(err.message);
-    })
-
-    proxyRequest.end();
 
     // https.get(options, externalRequest => {
     //     res.send(`Request has been proxied to: 'https:\/\/${requestUrl}'`);
