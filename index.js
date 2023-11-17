@@ -8,6 +8,7 @@ const archiver = require('archiver');
 const path = require("path");
 const AdmZip = require('adm-zip');
 const url = require("url");
+const http = require('http');
 
 const app = express();
 
@@ -78,16 +79,59 @@ app.get('/proxy-request', function(req,res) {
     console.log(`Received request for ${requestUrl} over the Tor circuit. Proxying it to the final destination`);
 
     const options = {
-        host: `${requestUrl}`,
+        host: requestUrl,
         port: 5678
     };
 
-    https.get(options, externalRequest => {
-        res.send(`Request has been proxied to: 'https:\/\/${requestUrl}'`);
+    http.request(options, response => {
+        response.setEncoding('utf8');
+
+        let body = '';
+        response.on('data', (chunk) => {
+            body += chunk;
+        });
+
+        // When the response completes, parse the JSON and log the IP address
+        response.on('end', () => {
+            const data = JSON.parse(body);
+            console.log('data');
+            console.log(data);
+            console.log('data.body');
+            console.log(data.body);
+            res.send("data:" + data)
+            res.send("data.body:" + data.body)
+        });
+
     }).on("error", err => {
         console.error('Error: ', err.message)
         res.status(404).send(err.message);
     })
+
+    // https.get(options, externalRequest => {
+    //     res.send(`Request has been proxied to: 'https:\/\/${requestUrl}'`);
+    // }).on("error", err => {
+    //     console.error('Error: ', err.message)
+    //     res.status(404).send(err.message);
+    // })
+
+    // Create a new http.ClientRequest object
+    // const request = http.request(options, (response) => {
+    //     // Set the response encoding to utf8
+    //     response.setEncoding('utf8');
+    //
+    //     // When a chunk of data is received, append it to the body
+    //     let body = '';
+    //     response.on('data', (chunk) => {
+    //         body += chunk;
+    //     });
+    //
+    //     // When the response completes, parse the JSON and log the IP address
+    //     response.on('end', () => {
+    //         const data = JSON.parse(body);
+    //         console.log(data.ip);
+    //         res.send("Your public IP is: " + data.ip)
+    //     });
+    // });
 });
 
 app.get('/download-tcpdump-zip', (req, res) => {
