@@ -89,6 +89,7 @@ app.get('/proxy-request', function(req,res) {
 
     const ipAddresses = req.header('x-forwarded-for');
 
+    const reqHeaders = req.headers
     const options = {
         method: 'get',
         url: 'https://facebook.com',
@@ -99,7 +100,7 @@ app.get('/proxy-request', function(req,res) {
         .then(response => {
             const data = response.data;
             console.log(data);
-            res.send("Your ip:" + ipAddresses + "data: " + data);
+            res.send("Your ip:" + ipAddresses + "data: " + data + "reqHeaders: " + reqHeaders);
         })
         .catch(error => {
             console.error('Error:', error);
