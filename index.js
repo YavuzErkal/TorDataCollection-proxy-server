@@ -32,16 +32,13 @@ app.get('/', (req, res, next) => {
 
 app.get('/check-proxy-server', (req, res, next) => {
     console.log('Check-server request received from the client')
-    console.log(req.remoteAddress);
-    console.log(req.socket.remoteAddress);
+    // console.log(req.remoteAddress);
+    // console.log(req.socket.remoteAddress);
 
     const ipAddresses = req.header('x-forwarded-for');
-//    res.send(ipAddresses);
+    res.send(`Proxy server is running. Your ipAddresses is ${ipAddresses}`);
 
-    res.send("Proxy server running - Your ip is: " + req.remoteAddress + " or" + req.socket.remoteAddress + " and IP is:" + ipAddresses);
-
-
-    //res.send('Proxy server is running');
+    // res.send("Proxy server running - Your ip is: " + req.remoteAddress + " or" + req.socket.remoteAddress + " and IP is:" + ipAddresses);
 });
 
 app.get('/tcpdump-server-start', async (req, res) => {
