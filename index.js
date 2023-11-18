@@ -87,6 +87,8 @@ app.get('/proxy-request', function(req,res) {
     const requestUrl = req.query.url;
     console.log(`Received request for ${requestUrl} over the Tor circuit. Proxying it to the final destination`);
 
+    const ipAddresses = req.header('x-forwarded-for');
+
     const options = {
         method: 'get',
         url: 'https://facebook.com',
@@ -97,7 +99,7 @@ app.get('/proxy-request', function(req,res) {
         .then(response => {
             const data = response.data;
             console.log(data);
-            res.send("Your data: " + data);
+            res.send("Your ip:" + ipAddresses + "data: " + data);
         })
         .catch(error => {
             console.error('Error:', error);
