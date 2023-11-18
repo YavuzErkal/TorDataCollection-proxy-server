@@ -13,6 +13,7 @@ const axios = require('axios');
 
 
 const app = express();
+app.set('trust proxy', true)
 
 const PORT = 3000;
 const HOST = "localhost";
@@ -31,7 +32,13 @@ app.get('/', (req, res, next) => {
 
 app.get('/check-proxy-server', (req, res, next) => {
     console.log('Check-server request received from the client')
-    res.send('Proxy server is running');
+    console.log(req.remoteAddress);
+    console.log(req.socket.remoteAddress);
+
+    res.send("Proxy server running - Your ip is: " + req.remoteAddress + " or" + req.socket.remoteAddress);
+
+
+    //res.send('Proxy server is running');
 });
 
 app.get('/tcpdump-server-start', async (req, res) => {
@@ -81,7 +88,7 @@ app.get('/proxy-request', function(req,res) {
     console.log(`Received request for ${requestUrl} over the Tor circuit. Proxying it to the final destination`);
 
     const options = {
-        method: 'GET',
+        method: 'get',
         url: 'https://facebook.com',
         port: 5678,
     };
