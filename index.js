@@ -35,7 +35,10 @@ app.get('/check-proxy-server', (req, res, next) => {
     console.log(req.remoteAddress);
     console.log(req.socket.remoteAddress);
 
-    res.send("Proxy server running - Your ip is: " + req.remoteAddress + " or" + req.socket.remoteAddress);
+    const ipAddresses = req.header('x-forwarded-for');
+    res.send(ipAddresses);
+
+    res.send("Proxy server running - Your ip is: " + req.remoteAddress + " or" + req.socket.remoteAddress + " and IP is:" + ipAddresses);
 
 
     //res.send('Proxy server is running');
