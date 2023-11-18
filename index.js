@@ -13,7 +13,7 @@ const axios = require('axios');
 
 
 const app = express();
-app.set('trust proxy', true)
+//app.set('trust proxy', true)
 
 const PORT = 3000;
 const HOST = "localhost";
