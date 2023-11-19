@@ -44,9 +44,11 @@ app.get('/check-proxy-server', (req, res, next) => {
 app.get('/tcpdump-server-start', async (req, res) => {
     console.log(`Starting tcpdump at server side`);
 
-    const getNetworkInterface = "tcpdump -D | awk -F '[. ]' 'NR==1 {print $2}'";
-    const { stdout: networkInterface_ } = await execPromise(getNetworkInterface);
-    networkInterface = networkInterface_.replace(/\r?\n$/, '');
+    // const getNetworkInterface = "tcpdump -D | awk -F '[. ]' 'NR==1 {print $2}'";
+    // const { stdout: networkInterface_ } = await execPromise(getNetworkInterface);
+    //networkInterface = networkInterface_.replace(/\r?\n$/, '');
+
+    networkInterface = "any";
     console.log(`Network interface: ${networkInterface}`);
 
     outputFile = `${outputDirectory}/${formatToCustomString(new Date())}-server-tcpdump.txt`;
@@ -100,7 +102,7 @@ app.get('/proxy-request', function(req,res) {
         .then(response => {
             const data = response.data;
             console.log(data);
-            res.send("Your ip:" + ipAddresses + "data: " + data + "reqHeaders: " + reqHeaders);
+            res.send("Your ip:" + ipAddresses + "data: " + data);
         })
         .catch(error => {
             console.error('Error:', error);
