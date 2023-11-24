@@ -1,14 +1,10 @@
 const express = require('express');
 const cors = require("cors")
-const https = require('https');
 const fs = require('fs');
 const {spawn, exec} = require("node:child_process");
 const util = require('util');
-const archiver = require('archiver');
 const path = require("path");
 const AdmZip = require('adm-zip');
-const url = require("url");
-const http = require('http');
 const axios = require('axios');
 
 
@@ -32,8 +28,10 @@ app.get('/', (req, res, next) => {
 
 app.get('/check-proxy-server', (req, res, next) => {
     console.log('Check-server request received from the client')
-    // console.log(req.remoteAddress);
-    // console.log(req.socket.remoteAddress);
+    console.log('req.remoteAddress');
+    console.log(req.remoteAddress);
+    console.log('req.socket.remoteAddress');
+    console.log(req.socket.remoteAddress);
 
     const ipAddresses = req.header('x-forwarded-for');
     res.send(`Proxy server is running. Your ipAddresses is ${ipAddresses}`);
@@ -66,7 +64,7 @@ app.get('/tcpdump-server-start', async (req, res) => {
     currentTcpdumpPID = tcpdumpPID.replace(/\r?\n$/, '');
 
     const jsonResponse = {
-        message: 'Proxy server: tcpdump is started successfully.',
+        message: `Proxy server: tcpdump is started successfully with PID. ${currentTcpdumpPID}`,
         outputFile: outputFile.replace('/root/', '')
     };
 
@@ -91,7 +89,7 @@ app.get('/proxy-request', function(req,res) {
 
     const ipAddresses = req.header('x-forwarded-for');
 
-    const reqHeaders = req.headers
+    // const reqHeaders = req.headers
     const options = {
         method: 'get',
         url: 'https://facebook.com',
@@ -101,7 +99,6 @@ app.get('/proxy-request', function(req,res) {
     axios(options)
         .then(response => {
             const data = response.data;
-            console.log(data);
             res.send("Your ip:" + ipAddresses + "data: " + data);
         })
         .catch(error => {
