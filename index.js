@@ -1,23 +1,17 @@
-const axios = require('axios');
 const express = require('express');
 const cors = require("cors")
-
+const axios = require('axios');
 const app = express();
-app.use(cors()); // Cors
 
 const PORT = 3000;
 const HOST = "localhost";
 
-app.listen(PORT, HOST, () => {
-    console.log(`Starting Proxy Server at ${HOST}:${PORT}`);
-});
+app.use(cors()); // Cors
+app.use(express.static('public')); // serve files in the public directory
 
 app.get('/', (req, res, next) => {
     res.sendFile('public/index.html', {root: __dirname});
 });
-
-let currentTcpdumpPID;
-app.use(express.static('public')); // serve files in the public directory
 
 app.get('/check-proxy-server', (req, res, next) => {
     console.log('Check-server request received from the client')
@@ -45,4 +39,8 @@ app.get('/proxy-request', function(req,res) {
             console.error('Error:', error);
             res.status(500).send('An error occurred');
         });
+
+// Start the server
+app.listen(PORT, HOST, () => {
+    console.log(`Starting Proxy Server at ${HOST}:${PORT}`);
 });
