@@ -13,10 +13,9 @@ app.get('/', (req, res, next) => {
     res.sendFile('public/index.html', {root: __dirname});
 });
 
-app.get('/check-proxy-server', (req, res, next) => {
+app.get('/check-proxy-server', (req, res) => {
     console.log('Check-server request received from the client')
-    const ipAddresses = req.header('x-forwarded-for');
-    res.send(`Proxy server is running. Your ipAddresses is ${ipAddresses}`);
+    res.send(`Proxy server is running.`);
 });
 
 app.get('/proxy-request', function(req,res) {
@@ -39,6 +38,7 @@ app.get('/proxy-request', function(req,res) {
             console.error('Error:', error);
             res.status(500).send('An error occurred');
         });
+});
 
 // Start the server
 app.listen(PORT, HOST, () => {
